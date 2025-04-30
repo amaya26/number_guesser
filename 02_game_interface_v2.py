@@ -31,7 +31,7 @@ def get_round_artists():
     all_artist_list = get_artists()
 
     round_artists = []
-    monthly_listeners = []
+    round_monthly_listeners = []
 
     # loop until we have two artists CHANGE THE LOOP
     while len(round_artists) < 2:
@@ -42,26 +42,27 @@ def get_round_artists():
             # add artist to the list for this round
             round_artists.append(random_artist)
             # add their monthly listeners to be compared
-            monthly_listeners.append(random_artist[1])
+            round_monthly_listeners.append(random_artist[1])
 
-    # find the
-    highest_monthly_listeners = max(monthly_listeners)
-    answer = round_artists[monthly_listeners.index(highest_monthly_listeners)]
-    answer_artist_name = answer[0]
-    return answer_artist_name
+    # find the highest number of monthly listeners of the two artists for this round
+    highest_monthly_listeners = max(round_monthly_listeners)
+    # find the lowest number of the artists for this round
+    lowest_monthly_listeners = min(round_monthly_listeners)
 
+    # correct answer is round_artists[the list position of the highest monthly listeners]
+    # (match the highest monthly listeners to the corresponding artist)
+    correct_answer = round_artists[round_monthly_listeners.index(highest_monthly_listeners)]
+    # find the incorrect answer
+    incorrect_answer = round_artists[round_monthly_listeners.index(lowest_monthly_listeners)]
 
+    # correct_answer contains name and number. Get name on its own
+    correct_artist_name = correct_answer[0]
+    # get name on its own
+    incorrect_artist_name = incorrect_answer[0]
 
-def round_ans(val):
-    """
-    Rounds number to the nearest integer
-    :param val: number to be rounded
-    :return: Rounded number (an integer)
-    """
+    # return both names
+    return correct_artist_name, incorrect_artist_name
 
-    var_rounded = (val * 2 + 1) // 2
-    raw_rounded = "{:.0f}".format(var_rounded)
-    return int(raw_rounded)
 
 class StartGame:
     """
