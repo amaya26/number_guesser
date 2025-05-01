@@ -125,39 +125,54 @@ class Play:
         self.heading_label = play_labels_ref[0]
         self.results_label = play_labels_ref[2]
 
-        # set up colour buttons...
+        # set up artist buttons...
         self.artist_frame = Frame(self.game_frame)
         self.artist_frame.grid(row=3)
 
-        # create four buttons in a 2 x 2 grid
-        for item in range(0, 2):
-            self.artist_button = Button(self.artist_frame, font=("Arial", "12"),
-                                        text="Artist Name", width=15)
-            self.artist_button.grid(row=item // 2,
-                                    column=item % 2,
-                                    padx=5, pady=5)
+        # get the answers from the round artists function
+        correct_answer, incorrect_answer = get_round_artists()
+        # choose a random artist to print first
+        print1 = random.choice([correct_answer, incorrect_answer])
+        # if the correct artist is printed first, then print the incorrect answer second
+        if print1 == correct_answer:
+            print2 = incorrect_answer
+        else:
+            print2 = correct_answer
 
-            # frame to hold hints and stats button
-            self.hints_stats_frame = Frame(self.game_frame)
-            self.hints_stats_frame.grid(row=6)
+        # create the buttons
+        self.artist_button = Button(self.artist_frame, font=("Arial", "12"),
+                                    text=print1, width=15)
+        self.artist_button.grid(row=1,
+                                column=1,
+                                padx=5, pady=5)
 
-            # list for buttons (frame | text | bg | command | width | row | colum | text colour)
-            control_button_list = [
-                [self.game_frame, "Next Round", "#1DB954", "", 21, 5, None, "#FFFFFF"],
-                [self.hints_stats_frame, "Hints", "#F9F6F0", "", 10, 0, 0, "#373737"],
-                [self.hints_stats_frame, "Stats", "#F9F6F0", "", 10, 0, 1, "#373737"],
-                # end button?
-            ]
+        self.artist_button = Button(self.artist_frame, font=("Arial", "12"),
+                                    text=print2, width=15)
+        self.artist_button.grid(row=1,
+                                column=2,
+                                padx=5, pady=5)
 
-            # create buttons and add to list
-            control_ref_list = []
-            for item in control_button_list:
-                make_control_button = Button(item[0], text=item[1], bg=item[2],
-                                             command=item[3], font=("Arial", "16", "bold"),
-                                             fg=item[7], width=item[4])
-                make_control_button.grid(row=item[5], column=item[6], padx=5, pady=5)
+        # frame to hold hints and stats button
+        self.hints_stats_frame = Frame(self.game_frame)
+        self.hints_stats_frame.grid(row=6)
 
-                control_ref_list.append(make_control_button)
+        # list for buttons (frame | text | bg | command | width | row | colum | text colour)
+        control_button_list = [
+            [self.game_frame, "Next Round", "#1DB954", "", 21, 5, None, "#FFFFFF"],
+            [self.hints_stats_frame, "Hints", "#F9F6F0", "", 10, 0, 0, "#373737"],
+            [self.hints_stats_frame, "Stats", "#F9F6F0", "", 10, 0, 1, "#373737"],
+            # end button?
+        ]
+
+        # create buttons and add to list
+        control_ref_list = []
+        for item in control_button_list:
+            make_control_button = Button(item[0], text=item[1], bg=item[2],
+                                         command=item[3], font=("Arial", "16", "bold"),
+                                         fg=item[7], width=item[4])
+            make_control_button.grid(row=item[5], column=item[6], padx=5, pady=5)
+
+            control_ref_list.append(make_control_button)
 
 
 # main routine
