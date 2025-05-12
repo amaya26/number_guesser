@@ -39,12 +39,8 @@ correct_artist_name = correct_answer[0]
 # get name on its own
 incorrect_artist_name = incorrect_answer[0]
 
-print(round_monthly_listeners.index(highest_monthly_listeners))
-print(round_monthly_listeners.index(lowest_monthly_listeners))
-print(highest_monthly_listeners)
-print(correct_answer)
+
 print(correct_artist_name)
-print(incorrect_answer)
+
 print(incorrect_artist_name)
-print(round_artists)
-print(round_monthly_listeners)
+

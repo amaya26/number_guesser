@@ -174,6 +174,115 @@ class Play:
 
             control_ref_list.append(make_control_button)
 
+        def new_round(self):
+            """
+            Chooses four colours, works out median for score to beat. Configures
+            buttons with chosen colours
+            """
+
+            # retrieve number of rounds played, add one to it and configure heading
+            rounds_played = self.rounds_played.get()
+            self.rounds_played.set(rounds_played)
+
+            rounds_wanted = self.rounds_wanted.get()
+
+            # get round colours and median score
+            self.round_artist_list, median, highest = get_round_artists()
+
+            # set target score as median (for later comparison)
+            self.target_score.set(median)
+
+            # add median and high score to lists for stats
+            self.all_high_score_list.append(highest)
+
+            # update heading and score to beat labels. "hide" results label
+            self.heading_label.config(text=f"Round {rounds_played + 1} of {rounds_wanted}")
+            self.target_label.config(text=f"Target Score: {median}",
+                                     font=("Arial", "14", "bold"))
+            self.results_label.config(text=f"{'=' * 7}", bg="#F0F0F0")
+
+            # configure buttons using foreground and background colours from list
+            # enable colour buttons (disabled at the end of the last round)
+            for count, item in enumerate(self.colour_button_ref):
+                item.config(fg=self.round_artist_list[count][2], bg=self.round_artist_list[count][0],
+                            text=self.round_artist_list[count][0], state=NORMAL)
+
+            self.next_button.config(state=DISABLED)
+
+        def round_results(self, user_choice):
+            """
+            Retrieves which button was pushed (index 0 - 3), retrieves
+            score and then compares it with median, updates results
+            and adds results to stats list.
+            """
+            # enable stats button after at least one round has been played
+            self.to_stats_button.config(state=NORMAL)
+
+            # gets user score and colour based on button press...
+            score = int(self.round_artist_list[user_choice][1])
+
+            # add one to the number of rounds played and retrieve
+            # the number of rounds won
+            rounds_played = self.rounds_played.get()
+            rounds_played += 1
+            self.rounds_played.set(rounds_played)
+
+            rounds_won = self.rounds_won.get()
+
+            # alternative way to get button name. Good for if buttons have been scrambled
+            artist_name = self.colour_button_ref[user_choice].cget('text')
+
+            # retrieve target score and compare with user score to find round result
+            target = self.target_score.get()
+
+            if score >= target:
+                result_text = f"Success! {artist_name} earned you {score} points"
+                result_bg = "#82B366"
+                self.all_scores_list.append(score)
+
+                rounds_won = self.rounds_won.get()
+                rounds_won += 1
+                self.rounds_won.set(rounds_won)
+
+            else:
+                result_text = f"Oops {artist_name} ({score}) is less than the target. "
+                result_bg = "#F8CECC"
+                self.all_scores_list.append(0)
+
+            self.results_label.config(text=result_text, bg=result_bg)
+
+            # printing area to generate test data for stats (delete them when done)
+            print("all scores", self.all_scores_list)
+            print("highest scores:", self.all_high_score_list)
+
+            # enable stats and next buttons, disable colour buttons
+            self.next_button.config(state=NORMAL)
+            self.to_stats_button.config(state=NORMAL)
+
+            # check to see if game is over
+            rounds_wanted = self.rounds_wanted.get()
+
+            # code for when the game ends
+            if rounds_played == rounds_wanted:
+                # work out success rate
+                success_rate = rounds_won / rounds_played * 100
+                success_string = ("Success Rate: "
+                                  f"{rounds_won} / {rounds_played}"
+                                  f"({success_rate:.0f}%")
+
+                # configure end game labels / buttons
+                self.heading_label.config(text="Game Over")
+                self.target_label.config(text=success_string)
+                self.choose_label.config(text="Please click the stats"
+                                              " button for more info. ")
+                self.next_button.config(state=DISABLED, text="Game Over")
+                self.to_stats_button.config(bg="#990000")
+                self.end_game_button.config(text="Play Again", bg="#006600"
+                                            , compound="right")
+
+            for item in self.colour_button_ref:
+                item.config(state=DISABLED)
+
 
 # main routine
 if __name__ == "__main__":
