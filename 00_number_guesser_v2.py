@@ -42,7 +42,7 @@ def get_round_artists():
             # add artist to the list for this round
             round_artists.append(random_artist)
             # add their monthly listeners to be compared
-            round_monthly_listeners.append(random_artist[1])
+            round_monthly_listeners.append(int(random_artist[1]))
 
     # find the highest number of monthly listeners of the two artists for this round
     highest_monthly_listeners = max(round_monthly_listeners)
@@ -60,8 +60,11 @@ def get_round_artists():
     # get name on its own
     incorrect_artist_name = incorrect_answer[0]
 
+    correct_listeners = correct_answer[1]
+    incorrect_listeners = incorrect_answer[1]
+
     # return both names
-    return correct_artist_name, incorrect_artist_name
+    return correct_artist_name, incorrect_artist_name, correct_listeners, incorrect_listeners
 
 
 class StartGame:
@@ -264,7 +267,7 @@ class Play:
         rounds_wanted = self.rounds_wanted.get()
 
         # get round artists and answers
-        correct, incorrect = get_round_artists()
+        correct, incorrect, high_monthly_listeners, low_monthly_listeners = get_round_artists()
         answer_list = [correct, incorrect]
         button1 = random.choice(answer_list)
         if button1 == correct:
@@ -273,6 +276,9 @@ class Play:
             button2 = correct
 
         self.correct_answer = correct
+        self.incorrect_answer = incorrect
+        self.high = high_monthly_listeners
+        self.low = low_monthly_listeners
 
         # update heading label. "hide" results label
         self.heading_label.config(text=f"Round {rounds_played + 1} of {rounds_wanted}")
@@ -289,6 +295,7 @@ class Play:
         score and then compares it with median, updates results
         and adds results to stats list.
         """
+
         # enable stats button after at least one round has been played
         self.to_stats_button.config(state=NORMAL)
 
@@ -302,7 +309,7 @@ class Play:
 
         # alternative way to get button name. Good for if buttons have been scrambled
         chosen_answer = self.artist_button_ref[user_choice].cget('text')
-        print(chosen_answer)
+        print("Chose", chosen_answer)
 
         if chosen_answer == self.correct_answer:
             result_text = f"Success! {chosen_answer} is correct"
@@ -322,8 +329,11 @@ class Play:
         self.results_label.config(text=result_text, bg=result_bg)
 
         # printing area to generate test data for stats (delete them when done)
-        print("all scores", self.all_scores_list)
-        print("highest scores:", self.all_high_score_list)
+        print("Correct", self.correct_answer)
+        print(self.high)
+        print("Incorrect", self.incorrect_answer)
+        print(self.low)
+        print()
 
         # enable stats and next buttons, disable colour buttons
         self.next_button.config(state=NORMAL)
@@ -368,9 +378,10 @@ class Play:
         # important: retrieve number of rounds
         # won as a number (rather than the self container
         rounds_won = self.rounds_won.get()
-        stats_bundle = [rounds_won, self.all_scores_list, self.all_high_score_list]
+        stats_bundle = [rounds_won, self.all_scores_list]
 
         Stats(self, stats_bundle)
+
 
 class Stats:
 
@@ -383,7 +394,6 @@ class Stats:
         # extract information from the master list
         rounds_won = all_stats_info[0]
         user_scores = all_stats_info[1]
-        high_scores = all_stats_info[2]
 
         # sort user score to find high score...
         user_scores.sort()
@@ -405,48 +415,21 @@ class Stats:
 
         success_rate = rounds_won / rounds_played * 100
         total_score = sum(user_scores)
-        max_possible = sum(high_scores)
-
-        best_score = user_scores[-1]
-        average_score = total_score / rounds_played
 
         # strings for start labels
 
         success_string = (f"Success Rate: {rounds_won} / {rounds_played}"
                           f"({success_rate:.0f}%)")
         total_score_string = f"Total Score: {total_score}"
-        max_possible_string = f"Maximum Possible Score: {max_possible}"
-        best_score_string = f"Best Score: {best_score}"
-
-        # custom comment text and formatting
-        if total_score == max_possible:
-            comment_string = "Amazing! You got the highest possible score!"
-            comment_colour = "#D5E8D4"
-
-        elif total_score == 0:
-            comment_string = "Oops - You lose every round! You might want to look at the hints"
-            comment_colour = "#F8CECC"
-
-        else:
-            comment_string = ""
-            comment_colour = "#F0F0F0"
-
-        average_score_string = f"Average Score: {average_score:.0f}\n"
 
         heading_font = ("Arial", "16", "bold")
         normal_font = ("Arial", "14")
-        comment_font = ("Arial", "13")
 
         # Label list (text | font | 'Sticky')
         all_stats_strings = [
             ["Statistics", heading_font, ""],
             [success_string, normal_font, "W"],
             [total_score_string, normal_font, "W"],
-            [max_possible_string, normal_font, "W"],
-            [comment_string, comment_font, "W"],
-            ["\nRound Stats", heading_font, ""],
-            [best_score_string, normal_font, "W"],
-            [average_score_string, normal_font, "W"]
         ]
 
         stats_label_ref_list = []
@@ -456,10 +439,6 @@ class Stats:
             self.stats_label.grid(row=count, sticky=item[2], padx=10)
             stats_label_ref_list.append(self.stats_label)
 
-        # configure comment label background (for all won / all lost)
-        stats_comment_label = stats_label_ref_list[4]
-        stats_comment_label.config(bg=comment_colour)
-
         self.dismiss_button = Button(self.stats_frame, font=("Arial", "16", "bold"),
                                      text="Dismiss", bg="#333333", fg="#FFFFFF", width=20,
                                      command=partial(self.close_stats, partner))
@@ -468,6 +447,7 @@ class Stats:
     def close_stats(self, partner):
         partner.to_stats_button.config(state=NORMAL)
         self.stats_box.destroy()
+
 
 class DisplayHints:
 
