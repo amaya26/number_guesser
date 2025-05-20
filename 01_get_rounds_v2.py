@@ -76,7 +76,7 @@ class StartGame:
         # Checks that the amount to be converted is a number above absolute zero
         try:
             rounds_wanted = int(rounds_wanted)
-            if 0 < rounds_wanted < 101:
+            if 101 > rounds_wanted > 0:
                 # clear entry box and reset instruction label so that when users
                 # play a new game, they don't see and error message
                 self.num_rounds_entry.delete(0, END)
@@ -106,6 +106,6 @@ class StartGame:
 # main routine
 if __name__ == "__main__":
     root = Tk()
-    root.title("Colour Quest")
+    root.title("Number Guesser")
     StartGame()
     root.mainloop()

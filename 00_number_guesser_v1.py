@@ -12,7 +12,7 @@ def get_artists():
     artist name and monthly listeners
     """
 
-    file = open("artists.csv", "r")
+    file = open("artists_testing.csv", "r")
     all_artists = list(csv.reader(file, delimiter=","))
     file.close()
 
@@ -60,11 +60,8 @@ def get_round_artists():
     # get name on its own
     incorrect_artist_name = incorrect_answer[0]
 
-    correct_listeners = correct_answer[1]
-    incorrect_listeners = incorrect_answer[1]
-
     # return both names
-    return correct_artist_name, incorrect_artist_name, correct_listeners, incorrect_listeners
+    return correct_artist_name, incorrect_artist_name
 
 
 class StartGame:
@@ -77,38 +74,37 @@ class StartGame:
         Gets number of rounds from user
         """
 
-        self.start_frame = Frame(padx=10, pady=10, bg="#e7e7e7")
+        self.start_frame = Frame(padx=10, pady=10)
         self.start_frame.grid()
 
         # strings for labels
-        intro_string = ("In each round you will be invited to choose an artist. Your goal"
-                        "is to choose the artist with the most monthly listeners. ")
+        intro_string = ("In each round you will be invited to choose an artist. Your goal is "
+                        "to choose the artist with the most monthly listeners")
 
-        # choose string = "Oops - Please choose a whole number more than zero."
-        choose_string = "How many rounds do you want to play?"
+        choose_string = "How many rounds do you want to play"
 
         # List of labels to be made (text | font | fg)
         start_labels_list = [
-            ["Cool game name", ("Arial", "16", "bold"), "#373737"],
-            [intro_string, ("Arial", "12", "bold"), "#373737"],
-            [choose_string, ("Arial", "12", "bold"), "#373737"]
+            ["Cool Game Name", ("Arial", "16", "bold"), None],
+            [intro_string, ("Arial", "12", "bold"), None],
+            [choose_string, ("Arial", "12", "bold"), "#009900"]
         ]
 
         # create labels and add them to the reference list...
 
         start_label_ref = []
         for count, item in enumerate(start_labels_list):
-            make_label = Label(self.start_frame, text=item[0], font=item[1], fg=item[2], bg="#e7e7e7",
+            make_label = Label(self.start_frame, text=item[0], font=item[1], fg=item[2],
                                wraplength=350, justify="left", pady=10, padx=20)
             make_label.grid(row=count)
 
             start_label_ref.append(make_label)
 
-        # extract choice label so that it can be changed to an error message if necessary
+        # extract choice label so that it can ne changed to an error message if necessary
         self.choose_label = start_label_ref[2]
 
         # frame so that entry box and button can be in the same row
-        self.entry_area_frame = Frame(self.start_frame, bg="#e7e7e7")
+        self.entry_area_frame = Frame(self.start_frame)
         self.entry_area_frame.grid(row=3)
 
         self.num_rounds_entry = Entry(self.entry_area_frame, font=("Arial", "20", "bold"),
@@ -117,7 +113,7 @@ class StartGame:
 
         # create play button
         self.play_button = Button(self.entry_area_frame, font=("Arial", "16", "bold"),
-                                  fg="#FFFFFF", bg="#1db954", text="Play", width=10,
+                                  fg="#FFFFFF", bg="#0057D8", text="Play", width=10,
                                   command=self.check_rounds)
         self.play_button.grid(row=0, column=1)
 
@@ -126,41 +122,37 @@ class StartGame:
         Checks users have entered 1 or more rounds
         """
 
-        # Retrieve rounds to play
         rounds_wanted = self.num_rounds_entry.get()
 
-        # Reset label and entry box (for when users want to come back to home screen)
-        self.choose_label.config(fg="#373737", font=("Arial", "12", "bold"))
+        # Reset label and entry box (for when users come back to the home screen)
+        self.choose_label.config(fg="#009900", font=("Arial", "12", "bold"))
         self.num_rounds_entry.config(bg="#FFFFFF")
 
-        error = "Oops - Please type in a whole number more than zero."
+        error = "Oops - Please choose a whole number more than zero"
         has_errors = "no"
 
-        # Checks that the rounds are a number greater than 0
+        # checks that amount to be converted is a number above absolute zero
         try:
             rounds_wanted = int(rounds_wanted)
-            if 0 < rounds_wanted < 101:
-                # clear entry box and reset instruction label so that when users
-                # play a new game, they don't see and error message
+            if rounds_wanted > 0:
+                # invoke Play class (and take across number of rounds)
                 self.num_rounds_entry.delete(0, END)
                 self.choose_label.config(text="How many rounds do you want to play?")
-                # invoke Play class (and take across number of rounds)
                 Play(rounds_wanted)
                 # Hide root window (ie: hide rounds choice window)
                 root.withdraw()
+
             else:
                 has_errors = "yes"
 
         except ValueError:
             has_errors = "yes"
 
-        # display the error if necessary
-        if has_errors == "yes":
-            print(f"Error - {rounds_wanted}")
-            self.choose_label.config(text=error, fg="#990000",
-                                     font=("Arial", "10", "bold"))
-            self.num_rounds_entry.config(bg="#F4CCCC")
-            self.num_rounds_entry.delete(0, END)
+            # display the error if necessary
+            if has_errors == "yes":
+                self.choose_label.config(text=error, fg="#990099", font=("Arial", "10", "bold"))
+                self.num_rounds_entry.config(bg="#F4CCCC")
+                self.num_rounds_entry.delete(0, END)
 
 
 class Play:
@@ -207,10 +199,8 @@ class Play:
 
             play_labels_ref.append(self.make_label)
 
-        # retrieve labels so they can be configured later
+        # Retrieve Labels so they can be configured later
         self.heading_label = play_labels_ref[0]
-        self.target_label = play_labels_ref[1]
-        self.choose_label = play_labels_ref[2]
         self.results_label = play_labels_ref[2]
 
         # set up artist buttons...
@@ -222,10 +212,9 @@ class Play:
 
         # create two buttons in a grid
         for item in range(0, 2):
-            self.artist_button = Button(self.artist_frame, font=("Arial", "12", "bold"), text="Artist Name",
-                                        bg="#373737", fg="#FFFFFF", height=2,
-                                        width=16, command=partial(self.round_results, item))
-            self.artist_button.grid(row=item // 2, column=item % 2, pady=10, padx=10)
+            self.artist_button = Button(self.artist_frame, font=("Arial", "12"), text="Arist Name",
+                                        width=15, command=partial(self.round_results, item))
+            self.artist_button.grid(row=item // 2, column=item % 2, pady=5, padx=5)
 
             self.artist_button_ref.append(self.artist_button)
 
@@ -233,11 +222,11 @@ class Play:
         self.hints_stats_frame = Frame(self.game_frame)
         self.hints_stats_frame.grid(row=6)
 
-        # list for buttons (frame | text | bg | command | width | row | column
+        # list for buttons (frame | text | bg | command | width | row | colum | text colour)
         control_button_list = [
-            [self.game_frame, "Next Round", "#1db954", self.new_round, 20, 5, None, "#FFFFFF"],
-            [self.hints_stats_frame, "Hints", "#f9f6f0", self.to_hints, 10, 0, 0, "#373737"],
-            [self.hints_stats_frame, "Stats", "#f9f6f0", self.to_stats, 10, 0, 1, "#373737"],
+            [self.game_frame, "Next Round", "#1DB954", "", 21, 5, None, "#FFFFFF"],
+            [self.hints_stats_frame, "Hints", "#F9F6F0", "", 10, 0, 0, "#373737"],
+            [self.hints_stats_frame, "Stats", "#F9F6F0", "", 10, 0, 1, "#373737"],
         ]
 
         # create buttons and add to list
@@ -245,7 +234,7 @@ class Play:
         for item in control_button_list:
             make_control_button = Button(item[0], text=item[1], bg=item[2],
                                          command=item[3], font=("Arial", "16", "bold"),
-                                         fg=item[7], width=item[4])
+                                         fg="#FFFFFF", width=item[4])
             make_control_button.grid(row=item[5], column=item[6], padx=5, pady=5)
 
             control_ref_list.append(make_control_button)
@@ -272,26 +261,19 @@ class Play:
         rounds_wanted = self.rounds_wanted.get()
 
         # get round artists and answers
-        correct, incorrect, high_monthly_listeners, low_monthly_listeners = get_round_artists()
+        correct, incorrect = get_round_artists()
         answer_list = [correct, incorrect]
-        button1 = random.choice(answer_list)
-        if button1 == correct:
-            button2 = incorrect
-        else:
-            button2 = correct
-
         self.correct_answer = correct
-        self.incorrect_answer = incorrect
-        self.high = high_monthly_listeners
-        self.low = low_monthly_listeners
 
         # update heading label. "hide" results label
         self.heading_label.config(text=f"Round {rounds_played + 1} of {rounds_wanted}")
-        self.results_label.config(text=f"{'=' * 7}", bg="#f0f0f0")
+        self.results_label.config(text=f"{'=' * 7}", bg="#F0F0F0")
 
-        self.artist_button_ref[0].config(text=button1, state=NORMAL)
-        self.artist_button_ref[1].config(text=button2, state=NORMAL)
+        #
+        for i in range(2):
+            self.artist_button_ref[i].config(text=answer_list[i], state=NORMAL)
 
+        # enable artist buttons (disabled at the end of the last round)
         self.next_button.config(state=DISABLED)
 
     def round_results(self, user_choice):
@@ -300,7 +282,6 @@ class Play:
         score and then compares it with median, updates results
         and adds results to stats list.
         """
-
         # enable stats button after at least one round has been played
         self.to_stats_button.config(state=NORMAL)
 
@@ -312,8 +293,8 @@ class Play:
 
         rounds_won = self.rounds_won.get()
 
+        # alternative way to get button name. Good for if buttons have been scrambled
         chosen_answer = self.artist_button_ref[user_choice].cget('text')
-        print("Chose", chosen_answer)
 
         if chosen_answer == self.correct_answer:
             result_text = f"Success! {chosen_answer} is correct"
@@ -332,11 +313,8 @@ class Play:
         self.results_label.config(text=result_text, bg=result_bg)
 
         # printing area to generate test data for stats (delete them when done)
-        print("Correct", self.correct_answer)
-        print(self.high)
-        print("Incorrect", self.incorrect_answer)
-        print(self.low)
-        print()
+        print("all scores", self.all_scores_list)
+        print("highest scores:", self.all_high_score_list)
 
         # enable stats and next buttons, disable artist buttons
         self.next_button.config(state=NORMAL)
@@ -345,155 +323,22 @@ class Play:
         # check to see if game is over
         rounds_wanted = self.rounds_wanted.get()
 
+        # code for when the game ends
         if rounds_played == rounds_wanted:
+
             # work out success rate
             success_rate = rounds_won / rounds_played * 100
-            success_string = (f"Success Rate: "
+            success_string = ("Success Rate: "
                               f"{rounds_won} / {rounds_played}"
-                              f"({success_rate:.0f}%)")
-            # configure 'end game' labels / buttons
+                              f"({success_rate:.0f}%")
+
+            # configure end game labels / buttons
             self.heading_label.config(text="Game Over")
-            self.target_label.config(text=success_string)
-            self.choose_label.config(text="Please click the stats button for more info")
             self.next_button.config(state=DISABLED, text="Game Over")
+            self.to_stats_button.config(bg="#990000")
 
         for item in self.artist_button_ref:
             item.config(state=DISABLED)
-
-    def close_play(self):
-        # reshow root (ie: close rounds) and end current
-        # game / allow new game to start
-        root.deiconify()
-        self.play_box.destroy()
-
-    def to_hints(self):
-        """
-        displays hints for playing game
-        :return:
-        """
-        DisplayHints(self)
-
-    def to_stats(self):
-        """
-        displays hints for playing game
-        """
-        # important: retrieve number of rounds
-        # won as a number (rather than the self container
-        rounds_won = self.rounds_won.get()
-        stats_bundle = [rounds_won, self.all_scores_list]
-
-        Stats(self, stats_bundle)
-
-
-class Stats:
-
-    def __init__(self, partner, all_stats_info):
-
-        # extract information from the master list
-        rounds_won = all_stats_info[0]
-        user_scores = all_stats_info[1]
-
-        # sort user score to find high score...
-        user_scores.sort()
-
-        # setup dialogue box
-        self.stats_box = Toplevel()
-
-        # disable stats button
-        partner.to_stats_button.config(state=DISABLED)
-
-        # if user press cross at top, close stats and 'releases' stats button
-        self.stats_box.protocol('WM_DELETE_WINDOW', partial(self.close_stats, partner))
-
-        self.stats_frame = Frame(self.stats_box, width=300, height=200)
-        self.stats_frame.grid()
-
-        # math to populate stats dialogue
-        rounds_played = len(user_scores)
-
-        success_rate = rounds_won / rounds_played * 100
-        total_score = sum(user_scores)
-
-        # strings for start labels
-
-        success_string = (f"Success Rate: {rounds_won} / {rounds_played} "
-                          f"({success_rate:.0f}%)")
-        total_score_string = f"Total Score: {total_score}"
-
-        heading_font = ("Arial", "16", "bold")
-        normal_font = ("Arial", "14")
-
-        # Label list (text | font | 'Sticky')
-        all_stats_strings = [
-            ["Statistics", heading_font, ""],
-            [success_string, normal_font, "W"],
-            [total_score_string, normal_font, "W"],
-        ]
-
-        stats_label_ref_list = []
-        for count, item in enumerate(all_stats_strings):
-            self.stats_label = Label(self.stats_frame, text=item[0], font=item[1],
-                                     anchor="w", justify="left", padx=30, pady=5)
-            self.stats_label.grid(row=count, sticky=item[2], padx=10)
-            stats_label_ref_list.append(self.stats_label)
-
-        self.dismiss_button = Button(self.stats_frame, font=("Arial", "16", "bold"),
-                                     text="Dismiss", bg="#333333", fg="#FFFFFF", width=20,
-                                     command=partial(self.close_stats, partner))
-        self.dismiss_button.grid(row=8, padx=10, pady=10)
-
-    def close_stats(self, partner):
-        partner.to_stats_button.config(state=NORMAL)
-        self.stats_box.destroy()
-
-
-class DisplayHints:
-
-    """
-    Hints
-    """
-
-    def __init__(self, partner):
-        # setup dialogue box and background colour
-        background = "#cedbd3"
-        self.help_box = Toplevel()
-
-        # disable help button
-        partner.to_help_button.config(state=DISABLED)
-
-        # if user press cross at top, close help and 'releases' help button
-        self.help_box.protocol('WM_DELETE_WINDOW', partial(self.close_help, partner))
-
-        self.help_frame = Frame(self.help_box, width=300, height=200)
-        self.help_frame.grid()
-
-        self.help_hearing_label = Label(self.help_frame, text="\nHelp / Info",
-                                        font=("Arial", "14", "bold"))
-        self.help_hearing_label.grid(row=0)
-
-        help_text = "\nThis game involves choosing between two artists. Click the one with the highest " \
-                    "monthly listeners on Spotify. If you're correct, you'll earn a point. Click the Stats " \
-                    "button to view your score. The game will end once you've played the number of rounds entered " \
-                    "at the start. Good luck! \n"
-
-        self.help_text_label = Label(self.help_frame, text=help_text,
-                                     wraplength=350, justify="left")
-        self.help_text_label.grid(row=1, padx=10)
-
-        self.dismiss_button = Button(self.help_frame, font=("Arial", "12", "bold"),
-                                     text="Dismiss", bg="#1db954", fg="#FFFFFF", command=partial(self.close_help,
-                                                                                                 partner))
-        self.dismiss_button.grid(row=2, padx=10, pady=10)
-
-        # List and loop to set the background colour on everything except the buttons
-        recolour_list = [self.help_frame, self.help_hearing_label, self.help_text_label]
-
-        for item in recolour_list:
-            item.config(bg=background)
-
-    def close_help(self, partner):
-        partner.to_help_button.config(state=NORMAL)
-        self.help_box.destroy()
 
 
 # main routine

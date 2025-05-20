@@ -81,15 +81,15 @@ class StartGame:
         self.start_frame.grid()
 
         # strings for labels
-        intro_string = ("In each round you will be invited to choose an artist. Your goal"
-                        "is to choose the artist with the most monthly listeners. ")
+        intro_string = ("In each round you will be invited to choose between two artists. Your goal is "
+                        "to choose the artist with the most monthly listeners on Spotify.")
 
         # choose string = "Oops - Please choose a whole number more than zero."
         choose_string = "How many rounds do you want to play?"
 
         # List of labels to be made (text | font | fg)
         start_labels_list = [
-            ["Cool game name", ("Arial", "16", "bold"), "#373737"],
+            ["Artist Guesser", ("Arial", "16", "bold"), "#373737"],
             [intro_string, ("Arial", "12", "bold"), "#373737"],
             [choose_string, ("Arial", "12", "bold"), "#373737"]
         ]
@@ -165,7 +165,7 @@ class StartGame:
 
 class Play:
     """
-    Interface for playing the Number Guesser game
+    Interface for playing the Artist Guesser game
     """
 
     def __init__(self, how_many):
@@ -235,9 +235,10 @@ class Play:
 
         # list for buttons (frame | text | bg | command | width | row | column
         control_button_list = [
-            [self.game_frame, "Next Round", "#1db954", self.new_round, 20, 5, None, "#FFFFFF"],
+            [self.game_frame, "Next Round", "#1db954", self.new_round, 21, 5, None, "#FFFFFF"],
             [self.hints_stats_frame, "Hints", "#f9f6f0", self.to_hints, 10, 0, 0, "#373737"],
             [self.hints_stats_frame, "Stats", "#f9f6f0", self.to_stats, 10, 0, 1, "#373737"],
+            [self.game_frame, "End", "#373737", self.close_play, 21, 7, None, "#FFFFFF"],
         ]
 
         # create buttons and add to list
@@ -246,7 +247,7 @@ class Play:
             make_control_button = Button(item[0], text=item[1], bg=item[2],
                                          command=item[3], font=("Arial", "16", "bold"),
                                          fg=item[7], width=item[4])
-            make_control_button.grid(row=item[5], column=item[6], padx=5, pady=5)
+            make_control_button.grid(row=item[5], column=item[6], padx=2, pady=5)
 
             control_ref_list.append(make_control_button)
 
@@ -254,6 +255,7 @@ class Play:
         self.next_button = control_ref_list[0]
         self.to_help_button = control_ref_list[1]
         self.to_stats_button = control_ref_list[2]
+        self.end_game_button = control_ref_list[3]
 
         self.to_stats_button.config(state=DISABLED)
 
@@ -279,11 +281,6 @@ class Play:
             button2 = incorrect
         else:
             button2 = correct
-
-        self.correct_answer = correct
-        self.incorrect_answer = incorrect
-        self.high = high_monthly_listeners
-        self.low = low_monthly_listeners
 
         # update heading label. "hide" results label
         self.heading_label.config(text=f"Round {rounds_played + 1} of {rounds_wanted}")
@@ -356,6 +353,7 @@ class Play:
             self.target_label.config(text=success_string)
             self.choose_label.config(text="Please click the stats button for more info")
             self.next_button.config(state=DISABLED, text="Game Over")
+            self.end_game_button.config(text="Play Again", bg="#1db954", compound="right")
 
         for item in self.artist_button_ref:
             item.config(state=DISABLED)
@@ -455,7 +453,7 @@ class DisplayHints:
 
     def __init__(self, partner):
         # setup dialogue box and background colour
-        background = "#cedbd3"
+        background = "#E7E7E7"
         self.help_box = Toplevel()
 
         # disable help button
@@ -467,9 +465,9 @@ class DisplayHints:
         self.help_frame = Frame(self.help_box, width=300, height=200)
         self.help_frame.grid()
 
-        self.help_hearing_label = Label(self.help_frame, text="\nHelp / Info",
-                                        font=("Arial", "14", "bold"))
-        self.help_hearing_label.grid(row=0)
+        self.help_heading_label = Label(self.help_frame, text="\nHints",
+                                        font=("Arial", "16", "bold"))
+        self.help_heading_label.grid(row=0)
 
         help_text = "\nThis game involves choosing between two artists. Click the one with the highest " \
                     "monthly listeners on Spotify. If you're correct, you'll earn a point. Click the Stats " \
@@ -477,16 +475,16 @@ class DisplayHints:
                     "at the start. Good luck! \n"
 
         self.help_text_label = Label(self.help_frame, text=help_text,
-                                     wraplength=350, justify="left")
+                                     wraplength=350, justify="left", font=("Arial", "12"))
         self.help_text_label.grid(row=1, padx=10)
 
-        self.dismiss_button = Button(self.help_frame, font=("Arial", "12", "bold"),
+        self.dismiss_button = Button(self.help_frame, font=("Arial", "14", "bold"),
                                      text="Dismiss", bg="#1db954", fg="#FFFFFF", command=partial(self.close_help,
                                                                                                  partner))
         self.dismiss_button.grid(row=2, padx=10, pady=10)
 
         # List and loop to set the background colour on everything except the buttons
-        recolour_list = [self.help_frame, self.help_hearing_label, self.help_text_label]
+        recolour_list = [self.help_frame, self.help_heading_label, self.help_text_label]
 
         for item in recolour_list:
             item.config(bg=background)
@@ -499,6 +497,6 @@ class DisplayHints:
 # main routine
 if __name__ == "__main__":
     root = Tk()
-    root.title("Number Guesser")
+    root.title("Artist Guesser")
     StartGame()
     root.mainloop()

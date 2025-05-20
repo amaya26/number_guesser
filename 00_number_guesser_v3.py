@@ -81,15 +81,15 @@ class StartGame:
         self.start_frame.grid()
 
         # strings for labels
-        intro_string = ("In each round you will be invited to choose an artist. Your goal"
-                        "is to choose the artist with the most monthly listeners. ")
+        intro_string = ("In each round you will be invited to choose an artist. Your goal is"
+                        " to pick the artist with the most monthly listeners.")
 
         # choose string = "Oops - Please choose a whole number more than zero."
         choose_string = "How many rounds do you want to play?"
 
         # List of labels to be made (text | font | fg)
         start_labels_list = [
-            ["Cool game name", ("Arial", "16", "bold"), "#373737"],
+            ["Cool Game Name", ("Arial", "16", "bold"), "#373737"],
             [intro_string, ("Arial", "12", "bold"), "#373737"],
             [choose_string, ("Arial", "12", "bold"), "#373737"]
         ]
@@ -238,6 +238,7 @@ class Play:
             [self.game_frame, "Next Round", "#1db954", self.new_round, 20, 5, None, "#FFFFFF"],
             [self.hints_stats_frame, "Hints", "#f9f6f0", self.to_hints, 10, 0, 0, "#373737"],
             [self.hints_stats_frame, "Stats", "#f9f6f0", self.to_stats, 10, 0, 1, "#373737"],
+            [self.game_frame, "End", "#373737", self.close_play, 21, 7, None, "#FFFFFF"],
         ]
 
         # create buttons and add to list
@@ -254,6 +255,7 @@ class Play:
         self.next_button = control_ref_list[0]
         self.to_help_button = control_ref_list[1]
         self.to_stats_button = control_ref_list[2]
+        self.end_game_button = control_ref_list[3]
 
         self.to_stats_button.config(state=DISABLED)
 
@@ -356,6 +358,7 @@ class Play:
             self.target_label.config(text=success_string)
             self.choose_label.config(text="Please click the stats button for more info")
             self.next_button.config(state=DISABLED, text="Game Over")
+            self.end_game_button.config(text="Play Again", bg="#1db954", compound="right")
 
         for item in self.artist_button_ref:
             item.config(state=DISABLED)
@@ -467,7 +470,7 @@ class DisplayHints:
         self.help_frame = Frame(self.help_box, width=300, height=200)
         self.help_frame.grid()
 
-        self.help_hearing_label = Label(self.help_frame, text="\nHelp / Info",
+        self.help_hearing_label = Label(self.help_frame, text="\nHints",
                                         font=("Arial", "14", "bold"))
         self.help_hearing_label.grid(row=0)
 

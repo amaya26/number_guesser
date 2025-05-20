@@ -106,6 +106,6 @@ class StartGame:
 # main routine
 if __name__ == "__main__":
     root = Tk()
-    root.title("Colour Quest")
+    root.title("Number Guesser")
     StartGame()
     root.mainloop()
