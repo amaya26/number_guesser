@@ -12,7 +12,9 @@ def get_artists():
     artist name and monthly listeners
     """
 
+    # open the file
     file = open("artists_testing.csv", "r")
+    # Format file
     all_artists = list(csv.reader(file, delimiter=","))
     file.close()
 
@@ -25,23 +27,24 @@ def get_artists():
 def get_round_artists():
     """
     Choose two artists from larger list.
-    :return: list of artists and correct answer (the highest monthly listeners)
+    :return: correct and incorrect artist names
     """
-
+    # get the list of artists from the function
     all_artist_list = get_artists()
 
     round_artists = []
     round_monthly_listeners = []
 
-    # loop until we have two artists CHANGE THE LOOP
+    # loop until two artists are chosen
     while len(round_artists) < 2:
         # pick a random artist from the list
         random_artist = random.choice(all_artist_list)
 
+        # if the artist isn't already in the list
         if random_artist not in round_artists:
             # add artist to the list for this round
             round_artists.append(random_artist)
-            # add their monthly listeners to be compared
+            # add their monthly listeners to be compared (convert to int)
             round_monthly_listeners.append(int(random_artist[1]))
 
     # find the highest number of monthly listeners of the two artists for this round
@@ -55,7 +58,7 @@ def get_round_artists():
     # find the incorrect answer
     incorrect_answer = round_artists[round_monthly_listeners.index(lowest_monthly_listeners)]
 
-    # correct_answer contains name and number. Get name on its own
+    # correct_answer contains name and number - need to get name on its own
     correct_artist_name = correct_answer[0]
     # get name on its own
     incorrect_artist_name = incorrect_answer[0]
@@ -91,7 +94,6 @@ class StartGame:
         ]
 
         # create labels and add them to the reference list...
-
         start_label_ref = []
         for count, item in enumerate(start_labels_list):
             make_label = Label(self.start_frame, text=item[0], font=item[1], fg=item[2],
@@ -100,7 +102,7 @@ class StartGame:
 
             start_label_ref.append(make_label)
 
-        # extract choice label so that it can ne changed to an error message if necessary
+        # extract choice label so that it can be changed to an error message if necessary
         self.choose_label = start_label_ref[2]
 
         # frame so that entry box and button can be in the same row
@@ -119,7 +121,7 @@ class StartGame:
 
     def check_rounds(self):
         """
-        Checks users have entered 1 or more rounds
+        Checks users have entered 1 or more rounds (and no more than 100)
         """
 
         rounds_wanted = self.num_rounds_entry.get()
@@ -131,7 +133,7 @@ class StartGame:
         error = "Oops - Please choose a whole number more than zero"
         has_errors = "no"
 
-        # checks that amount to be converted is a number above absolute zero
+        # checks that amount to be converted is a number above zero
         try:
             rounds_wanted = int(rounds_wanted)
             if rounds_wanted > 0:
@@ -173,7 +175,6 @@ class Play:
 
         # Artist lists and score list
         self.round_artist_list = []
-        self.all_scores_list = []
         self.all_high_score_list = []
 
         self.play_box = Toplevel()
@@ -252,12 +253,11 @@ class Play:
 
     def new_round(self):
         """
-        does something
+        Begins a new round of the game
         """
 
-        # retrieve number of rounds played, add one to it and configure heading
+        # retrieve number of rounds played
         rounds_played = self.rounds_played.get()
-
         rounds_wanted = self.rounds_wanted.get()
 
         # get round artists and answers
@@ -269,17 +269,17 @@ class Play:
         self.heading_label.config(text=f"Round {rounds_played + 1} of {rounds_wanted}")
         self.results_label.config(text=f"{'=' * 7}", bg="#F0F0F0")
 
-        #
+        # configure the artist buttons
         for i in range(2):
             self.artist_button_ref[i].config(text=answer_list[i], state=NORMAL)
 
-        # enable artist buttons (disabled at the end of the last round)
+        # disables next button
         self.next_button.config(state=DISABLED)
 
     def round_results(self, user_choice):
         """
-        Retrieves which button was pushed (index 0 - 3), retrieves
-        score and then compares it with median, updates results
+        Retrieves which button was pushed, retrieves answer and
+        compares it to the correct answer, updates results
         and adds results to stats list.
         """
         # enable stats button after at least one round has been played
@@ -293,28 +293,29 @@ class Play:
 
         rounds_won = self.rounds_won.get()
 
-        # alternative way to get button name. Good for if buttons have been scrambled
+        # Get button name
         chosen_answer = self.artist_button_ref[user_choice].cget('text')
 
+        # if the button picked is correct
         if chosen_answer == self.correct_answer:
+            # display message
             result_text = f"Success! {chosen_answer} is correct"
             result_bg = "#82B366"
-            self.all_scores_list.append(1)
-
+            # update score
             rounds_won = self.rounds_won.get()
             rounds_won += 1
             self.rounds_won.set(rounds_won)
 
+        # if incorrect
         else:
+            # display message
             result_text = f"Oops {chosen_answer} is incorrect. "
             result_bg = "#F8CECC"
-            self.all_scores_list.append(0)
+
+        # print for testing
+        print(rounds_won)
 
         self.results_label.config(text=result_text, bg=result_bg)
-
-        # printing area to generate test data for stats (delete them when done)
-        print("all scores", self.all_scores_list)
-        print("highest scores:", self.all_high_score_list)
 
         # enable stats and next buttons, disable artist buttons
         self.next_button.config(state=NORMAL)
@@ -331,6 +332,8 @@ class Play:
             success_string = ("Success Rate: "
                               f"{rounds_won} / {rounds_played}"
                               f"({success_rate:.0f}%")
+            # for testing
+            print(success_string)
 
             # configure end game labels / buttons
             self.heading_label.config(text="Game Over")

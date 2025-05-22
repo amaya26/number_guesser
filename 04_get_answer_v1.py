@@ -1,14 +1,26 @@
 import csv
 import random
-from tkinter import *
-from functools import partial  # to prevent unwanted windows
-file = open("artists_testing.csv", "r")
-all_artists = list(csv.reader(file, delimiter=","))
-file.close()
 
-# remove first row
-all_artists.pop(0)
 
+# helper functions go here
+def get_artists():
+    """
+    Retrieves artists from csv file
+    :return: list of artists where each list item has the
+    artist name and monthly listeners
+    """
+
+    file = open("artists_testing.csv", "r")
+    all_artists_list = list(csv.reader(file, delimiter=","))
+    file.close()
+
+    # remove first row
+    all_artists_list.pop(0)
+
+    return all_artists_list
+
+
+all_artists = get_artists()
 round_artists = []
 round_monthly_listeners = []
 

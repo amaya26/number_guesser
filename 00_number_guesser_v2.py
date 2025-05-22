@@ -12,7 +12,9 @@ def get_artists():
     artist name and monthly listeners
     """
 
-    file = open("artists.csv", "r")
+    # open the file
+    file = open("artists_testing.csv", "r")
+    # Format file
     all_artists = list(csv.reader(file, delimiter=","))
     file.close()
 
@@ -25,7 +27,7 @@ def get_artists():
 def get_round_artists():
     """
     Choose two artists from larger list.
-    :return: list of artists and correct answer (the highest monthly listeners)
+    :return: correct answer, incorrect, as well as listener counts
     """
 
     all_artist_list = get_artists()
@@ -63,7 +65,7 @@ def get_round_artists():
     correct_listeners = correct_answer[1]
     incorrect_listeners = incorrect_answer[1]
 
-    # return both names
+    # return both names and listener counts
     return correct_artist_name, incorrect_artist_name, correct_listeners, incorrect_listeners
 
 
@@ -95,7 +97,6 @@ class StartGame:
         ]
 
         # create labels and add them to the reference list...
-
         start_label_ref = []
         for count, item in enumerate(start_labels_list):
             make_label = Label(self.start_frame, text=item[0], font=item[1], fg=item[2], bg="#e7e7e7",
@@ -125,7 +126,6 @@ class StartGame:
         """
         Checks users have entered 1 or more rounds
         """
-
         # Retrieve rounds to play
         rounds_wanted = self.num_rounds_entry.get()
 
@@ -263,7 +263,7 @@ class Play:
 
     def new_round(self):
         """
-        does something
+        Starts a new round
         """
 
         # retrieve number of rounds played, add one to it and configure heading
@@ -296,8 +296,8 @@ class Play:
 
     def round_results(self, user_choice):
         """
-        Retrieves which button was pushed (index 0 - 3), retrieves
-        score and then compares it with median, updates results
+        Retrieves which button was pushed, retrieves answer and
+        compares it to the correct answer, updates results
         and adds results to stats list.
         """
 

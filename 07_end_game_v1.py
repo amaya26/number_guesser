@@ -161,7 +161,7 @@ class Play:
             [self.game_frame, "Next Round", "#1DB954", "", 21, 5, None, "#FFFFFF"],
             [self.hints_stats_frame, "Hints", "#F9F6F0", "", 10, 0, 0, "#373737"],
             [self.hints_stats_frame, "Stats", "#F9F6F0", "", 10, 0, 1, "#373737"],
-            # end button?
+            [self.game_frame, "End", "#373737", self.close_play, 21, 7, None, "#FFFFFF"],
         ]
 
         # create buttons and add to list
@@ -173,6 +173,13 @@ class Play:
             make_control_button.grid(row=item[5], column=item[6], padx=5, pady=5)
 
             control_ref_list.append(make_control_button)
+
+    def close_play(self):
+        # reshow root (ie: close rounds) and end current
+        # game / allow new game to start
+        root.deiconify()
+        self.play_box.destroy()
+        print("Closes window")
 
 
 # main routine

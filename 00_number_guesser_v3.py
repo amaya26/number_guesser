@@ -12,7 +12,9 @@ def get_artists():
     artist name and monthly listeners
     """
 
-    file = open("artists.csv", "r")
+    # open the file
+    file = open("artists_testing.csv", "r")
+    # Format file
     all_artists = list(csv.reader(file, delimiter=","))
     file.close()
 
@@ -25,7 +27,7 @@ def get_artists():
 def get_round_artists():
     """
     Choose two artists from larger list.
-    :return: list of artists and correct answer (the highest monthly listeners)
+    :return: correct answer, incorrect, as well as listener counts
     """
 
     all_artist_list = get_artists()
@@ -84,7 +86,6 @@ class StartGame:
         intro_string = ("In each round you will be invited to choose an artist. Your goal is"
                         " to pick the artist with the most monthly listeners.")
 
-        # choose string = "Oops - Please choose a whole number more than zero."
         choose_string = "How many rounds do you want to play?"
 
         # List of labels to be made (text | font | fg)
@@ -133,7 +134,7 @@ class StartGame:
         self.choose_label.config(fg="#373737", font=("Arial", "12", "bold"))
         self.num_rounds_entry.config(bg="#FFFFFF")
 
-        error = "Oops - Please type in a whole number more than zero."
+        error = "Oops - Please type in a whole number between 0 and 100."
         has_errors = "no"
 
         # Checks that the rounds are a number greater than 0
@@ -265,7 +266,7 @@ class Play:
 
     def new_round(self):
         """
-        does something
+        begins a new round
         """
 
         # retrieve number of rounds played, add one to it and configure heading
@@ -298,8 +299,8 @@ class Play:
 
     def round_results(self, user_choice):
         """
-        Retrieves which button was pushed (index 0 - 3), retrieves
-        score and then compares it with median, updates results
+        Retrieves which button was pushed, retrieves answer and
+        compares it to the correct answer, updates results
         and adds results to stats list.
         """
 
@@ -332,13 +333,6 @@ class Play:
             self.all_scores_list.append(0)
 
         self.results_label.config(text=result_text, bg=result_bg)
-
-        # printing area to generate test data for stats (delete them when done)
-        print("Correct", self.correct_answer)
-        print(self.high)
-        print("Incorrect", self.incorrect_answer)
-        print(self.low)
-        print()
 
         # enable stats and next buttons, disable artist buttons
         self.next_button.config(state=NORMAL)
@@ -380,8 +374,7 @@ class Play:
         """
         displays hints for playing game
         """
-        # important: retrieve number of rounds
-        # won as a number (rather than the self container
+        # retrieve number of rounds won
         rounds_won = self.rounds_won.get()
         stats_bundle = [rounds_won, self.all_scores_list]
 
@@ -418,7 +411,6 @@ class Stats:
         total_score = sum(user_scores)
 
         # strings for start labels
-
         success_string = (f"Success Rate: {rounds_won} / {rounds_played} "
                           f"({success_rate:.0f}%)")
         total_score_string = f"Total Score: {total_score}"
@@ -445,6 +437,7 @@ class Stats:
                                      command=partial(self.close_stats, partner))
         self.dismiss_button.grid(row=8, padx=10, pady=10)
 
+    # close the stats window
     def close_stats(self, partner):
         partner.to_stats_button.config(state=NORMAL)
         self.stats_box.destroy()

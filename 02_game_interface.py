@@ -84,7 +84,6 @@ class Play:
                 [self.game_frame, "Next Round", "#1DB954", "", 21, 5, None, "#FFFFFF"],
                 [self.hints_stats_frame, "Hints", "#F9F6F0", "", 10, 0, 0, "#373737"],
                 [self.hints_stats_frame, "Stats", "#F9F6F0", "", 10, 0, 1, "#373737"],
-                # end button?
             ]
 
             # create buttons and add to list
