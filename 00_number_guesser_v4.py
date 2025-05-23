@@ -13,7 +13,7 @@ def get_artists():
     """
 
     # open the file
-    file = open("artists_testing.csv", "r")
+    file = open("artists.csv", "r")
     # Format file
     all_artists = list(csv.reader(file, delimiter=","))
     file.close()
@@ -158,7 +158,6 @@ class StartGame:
 
         # display the error if necessary
         if has_errors == "yes":
-            print(f"Error - {rounds_wanted}")
             self.choose_label.config(text=error, fg="#990000",
                                      font=("Arial", "10", "bold"))
             self.num_rounds_entry.config(bg="#F4CCCC")
@@ -173,6 +172,7 @@ class Play:
     def __init__(self, how_many):
 
         # rounds played - start with zero
+        self.correct_answer = None
         self.rounds_played = IntVar()
         self.rounds_played.set(0)
 
@@ -284,6 +284,8 @@ class Play:
         else:
             button2 = correct
 
+        self.correct_answer = correct
+
         # update heading label. "hide" results label
         self.heading_label.config(text=f"Round {rounds_played + 1} of {rounds_wanted}")
         self.results_label.config(text=f"{'=' * 7}", bg="#f0f0f0")
@@ -312,7 +314,6 @@ class Play:
         rounds_won = self.rounds_won.get()
 
         chosen_answer = self.artist_button_ref[user_choice].cget('text')
-        print("Chose", chosen_answer)
 
         if chosen_answer == self.correct_answer:
             result_text = f"Success! {chosen_answer} is correct"
@@ -346,7 +347,6 @@ class Play:
             # configure 'end game' labels / buttons
             self.heading_label.config(text="Game Over")
             self.target_label.config(text=success_string)
-            self.choose_label.config(text="Please click the stats button for more info")
             self.next_button.config(state=DISABLED, text="Game Over")
             self.end_game_button.config(text="Play Again", bg="#1db954", compound="right")
 
