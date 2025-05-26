@@ -79,6 +79,7 @@ class StartGame:
         Gets number of rounds from user
         """
 
+        # create the start frame
         self.start_frame = Frame(padx=10, pady=10, bg="#e7e7e7")
         self.start_frame.grid()
 
@@ -97,7 +98,6 @@ class StartGame:
         ]
 
         # create labels and add them to the reference list...
-
         start_label_ref = []
         for count, item in enumerate(start_labels_list):
             make_label = Label(self.start_frame, text=item[0], font=item[1], fg=item[2], bg="#e7e7e7",
@@ -125,7 +125,7 @@ class StartGame:
 
     def check_rounds(self):
         """
-        Checks users have entered 1 or more rounds
+        Checks user has entered 1 or more rounds
         """
 
         # Retrieve rounds to play
@@ -135,11 +135,13 @@ class StartGame:
         self.choose_label.config(fg="#373737", font=("Arial", "12", "bold"))
         self.num_rounds_entry.config(bg="#FFFFFF")
 
+        # set the error message
         error = "Oops! Please type in a whole number between 1 and 100."
         has_errors = "no"
 
         # Checks that the rounds are a number greater than 0
         try:
+            # convert to int
             rounds_wanted = int(rounds_wanted)
             if 0 < rounds_wanted < 101:
                 # clear entry box and reset instruction label so that when users
@@ -310,25 +312,31 @@ class Play:
         rounds_played = self.rounds_played.get()
         rounds_played += 1
         self.rounds_played.set(rounds_played)
-
         rounds_won = self.rounds_won.get()
 
+        # Find which artist the user chose
         chosen_answer = self.artist_button_ref[user_choice].cget('text')
 
+        # If the chosen answer is correct
         if chosen_answer == self.correct_answer:
+            # Display the correct answer message
             result_text = f"Success! {chosen_answer} is correct"
             result_bg = "#82B366"
+            # Add one to the list of scores
             self.all_scores_list.append(1)
-
+            # Increase the rounds won
             rounds_won = self.rounds_won.get()
             rounds_won += 1
             self.rounds_won.set(rounds_won)
 
         else:
+            # Display the incorrect answer message
             result_text = f"Oops {chosen_answer} is incorrect. "
             result_bg = "#F8CECC"
+            # Add 0 to the list of scores
             self.all_scores_list.append(0)
 
+        # Display the message with the correct text and background
         self.results_label.config(text=result_text, bg=result_bg)
 
         # enable stats and next buttons, disable artist buttons
@@ -338,6 +346,7 @@ class Play:
         # check to see if game is over
         rounds_wanted = self.rounds_wanted.get()
 
+        # If all rounds have been played
         if rounds_played == rounds_wanted:
             # work out success rate
             success_rate = rounds_won / rounds_played * 100
@@ -350,6 +359,7 @@ class Play:
             self.next_button.config(state=DISABLED, text="Game Over")
             self.end_game_button.config(text="Play Again", bg="#1db954", compound="right")
 
+        # Disable the artist buttons
         for item in self.artist_button_ref:
             item.config(state=DISABLED)
 
@@ -370,7 +380,7 @@ class Play:
         """
         displays stats
         """
-        # won as a number (rather than the self container
+        # won as a number (rather than the self container)
         rounds_won = self.rounds_won.get()
         stats_bundle = [rounds_won, self.all_scores_list]
 
@@ -399,22 +409,18 @@ class Stats:
 
         # if user press cross at top, close stats and 'releases' stats button
         self.stats_box.protocol('WM_DELETE_WINDOW', partial(self.close_stats, partner))
-
         self.stats_frame = Frame(self.stats_box, width=300, height=200)
         self.stats_frame.grid()
 
         # math to populate stats dialogue
         rounds_played = len(user_scores)
-
         success_rate = rounds_won / rounds_played * 100
         total_score = sum(user_scores)
 
         # strings for start labels
-
         success_string = (f"Success Rate: {rounds_won} / {rounds_played} "
                           f"({success_rate:.0f}%)")
         total_score_string = f"Total Score: {total_score}"
-
         heading_font = ("Arial", "16", "bold")
         normal_font = ("Arial", "14")
 
@@ -426,18 +432,20 @@ class Stats:
         ]
 
         stats_label_ref_list = []
+        # Create labels
         for count, item in enumerate(all_stats_strings):
             self.stats_label = Label(self.stats_frame, text=item[0], font=item[1],
                                      anchor="w", justify="left", padx=30, pady=5)
             self.stats_label.grid(row=count, sticky=item[2], padx=10)
             stats_label_ref_list.append(self.stats_label)
 
+        # Create button
         self.dismiss_button = Button(self.stats_frame, font=("Arial", "16", "bold"),
                                      text="Dismiss", bg="#333333", fg="#FFFFFF", width=20,
                                      command=partial(self.close_stats, partner))
         self.dismiss_button.grid(row=8, padx=10, pady=10)
 
-    # closes the statds window
+    # closes the stats window
     def close_stats(self, partner):
         partner.to_stats_button.config(state=NORMAL)
         self.stats_box.destroy()
@@ -459,10 +467,10 @@ class DisplayHints:
 
         # if user press cross at top, close help and 'releases' help button
         self.help_box.protocol('WM_DELETE_WINDOW', partial(self.close_help, partner))
-
         self.help_frame = Frame(self.help_box, width=300, height=200)
         self.help_frame.grid()
 
+        # Set the heading
         self.help_heading_label = Label(self.help_frame, text="\nHints",
                                         font=("Arial", "16", "bold"))
         self.help_heading_label.grid(row=0)
@@ -472,10 +480,12 @@ class DisplayHints:
                     "button to view your score. The game will end once you've played the number of rounds entered " \
                     "at the start. Good luck! \n"
 
+        # Set the label for help text
         self.help_text_label = Label(self.help_frame, text=help_text,
                                      wraplength=350, justify="left", font=("Arial", "12"))
         self.help_text_label.grid(row=1, padx=10)
 
+        # Set the close button
         self.dismiss_button = Button(self.help_frame, font=("Arial", "14", "bold"),
                                      text="Dismiss", bg="#1db954", fg="#FFFFFF", command=partial(self.close_help,
                                                                                                  partner))

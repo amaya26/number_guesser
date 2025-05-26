@@ -1,7 +1,6 @@
 import csv
 import random
 from tkinter import *
-from functools import partial  # to prevent unwanted windows
 
 
 # helper functions go here
